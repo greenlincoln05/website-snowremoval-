@@ -426,3 +426,11 @@ FodyWeavers.xsd
 
 # Official VS Code C# Dev Kit Extension exclusion
 #*.lscache
+
+# Project-specific
+.env.*
+!.env.example
+.dev.vars
+node_modules/
+.wrangler/
+.DS_Store
