@@ -28,16 +28,33 @@ Read this first. It is the full context for finishing the project. The owner (Li
 ## 3. What exists in this repo
 
 ```
-index.html               Standalone, SEO-ready, mobile-first one-page site (the website)
+public/                  Static site served by Cloudflare Pages (pages_build_output_dir)
+  index.html             Standalone, SEO-ready, mobile-first one-page site
+  signup.html            Plan + property form, then embedded Stripe Checkout
+  _redirects             /s -> /signup?plan=monthly (short link for the flyer QR)
+  robots.txt, sitemap.xml  (still contain YOURDOMAIN.com)
+functions/               Cloudflare Pages Functions (become /api/* routes)
+  api/checkout.js        Validate, write Supabase rows, create embedded Checkout Session
+  api/stripe-webhook.js  Verify signature, keep orders in sync (idempotent)
+  api/session-status.js  Return page: did the payment complete?
+  api/quote.js           Quote form -> quote_requests
+  _lib/util.js           Validation, season dates, Supabase + Stripe REST helpers
+supabase/schema.sql      Tables + RLS (run in the Supabase SQL editor)
+test/                    `npm test` (node:test, no dependencies)
+wrangler.toml, package.json, .env.example
 assets/                  QR code for the monthly Stripe link (PNG, SVG)
 design/                  Source for the print flyer and the storefront mockup
   canvas.json            Board layout (flyer front/back at 6.5x9in, storefront page)
   Main.dc.html           Flyer FRONT
   Back.dc.html           Flyer BACK
-  Store.dc.html          Storefront page design (superseded by index.html for real use)
+  Store.dc.html          Storefront page design (superseded by public/index.html)
 HANDOFF.md               This file
 README.md
 ```
+
+### Build status against section 5
+Code written and unit-tested with mocked Stripe/Supabase (not yet run against real accounts): steps 2 (schema file), 4, 5, 6, 7, 8, 9 (redirect only; QR not regenerated), and the robots/sitemap part of 13. Still open: 1, 3 (needs accounts), 10, 11, 12, 14, and the questions in section 6. Quote-form spam protection is the honeypot only; add a Cloudflare rate-limiting rule or Turnstile. Quote requests are stored but the owner is not emailed yet.
+Deviations to check: the Stripe API version is pinned to `2024-06-20` in `functions/_lib/util.js` (create the webhook endpoint with a matching API version); the monthly `cancel_at` is set from the webhook after checkout, not at session creation; a monthly signup made before Dec 1 is billed immediately and then monthly until Mar 31 (add a `trial_end` if billing should start Dec 1).
 
 The `design/*.dc.html` files run on Claude's Design artifact runtime (`support.js`), which is **not** in this repo. They are source records. The live design canvas is at https://claude.ai/artifact/3H2ez4aABEQPWNP2JknvQd. Export flyer PDFs from there.
 
@@ -86,7 +103,7 @@ Why this shape: the database stays the source of truth for customer and property
 
 ## 5. Next steps (in order)
 
-1. **Confirm the final business name and domain.** Update `index.html` (title, headings, JSON-LD, footer, canonical), flyer files, and any copy.
+1. **Confirm the final business name and domain.** Update `public/index.html` (title, headings, JSON-LD, footer, canonical), flyer files, and any copy.
 2. **Create the Supabase project.** Add `supabase/schema.sql` from the sketch in section 7. Enable RLS on all tables.
 3. **Set up the Cloudflare Pages project** from this repo. Add env vars (section 8). Add the custom domain.
 4. **Build `/api/checkout`:** validate input server-side, upsert `customers` and `properties`, create an `orders` row (`pending`), create the Stripe Checkout Session, return the `client_secret`. Attach `customer_id`, `property_id`, `order_id`, and plan as session metadata, and set `client_reference_id`.
