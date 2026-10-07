@@ -6,10 +6,10 @@
 <!--
   BEFORE YOU PUBLISH, replace:
   1. https://YOURDOMAIN.com/  (canonical, og:url, schema url)  ->  your real domain
-  2. https://buy.stripe.com/REPLACE_*  ->  your three Stripe Payment Links
+  2. (done) plan buttons go to /signup; Payment Links remain only as a fallback inside signup.html
   3. [YOUR SERVICE AREA]  ->  the neighborhoods or streets you actually serve
   4. "North Country Snow Co."  ->  your final business name
-  5. https://formspree.io/f/REPLACE_FORM_ID  ->  your form endpoint (free account at formspree.io; submissions are emailed to you)
+  5. (done) the quote form posts to /api/quote (stored in Supabase)
   Phone is 518-248-2142: keep it identical on Google Business Profile.
 -->
 <title>Snow Removal in Plattsburgh, NY | North Country Snow Co.</title>
@@ -259,7 +259,7 @@ summary{padding:6px 0;min-height:44px}
 <div class="price">$50<small>/visit</small></div>
 <p>One visit after a snowfall. Pay only when you need us.</p>
 <ul><li>Driveway and front walk</li><li>No commitment</li></ul>
-<a class="btn" href="https://buy.stripe.com/4gM9AU2t8gt6gpafjr83C02">Book one visit</a>
+<a class="btn" href="/signup?plan=one_time">Book one visit</a>
 </article>
 
 <article class="plan best">
@@ -268,7 +268,7 @@ summary{padding:6px 0;min-height:44px}
 <div class="price">$249<small>/month</small></div>
 <p>Every storm of 3 inches or more, December through March. No per-storm fees.</p>
 <ul><li>Driveway and front walk</li><li>No big-storm fee</li></ul>
-<a class="btn" href="https://buy.stripe.com/cNi4gA3xc2Cgfl60ox83C00">Start monthly plan</a>
+<a class="btn" href="/signup?plan=monthly">Start monthly plan</a>
 </article>
 
 <article class="plan">
@@ -277,7 +277,7 @@ summary{padding:6px 0;min-height:44px}
 <div class="price">$1,000<small>/season</small></div>
 <p>A longer season: November through April, paid once up front.</p>
 <ul><li>Driveway and front walk</li><li>No big-storm fee</li></ul>
-<a class="btn" href="https://buy.stripe.com/14A9AU4Bg2Cggpa2wF83C01">Buy the season</a>
+<a class="btn" href="/signup?plan=season">Buy the season</a>
 </article>
 
 </div>
@@ -288,7 +288,7 @@ summary{padding:6px 0;min-height:44px}
 <div class="wrap">
 <h2>Get a free quote</h2>
 <p class="lede">Tell us about your property and we'll get back to you with a price. It takes about a minute.</p>
-<form id="quote-form" class="form" action="https://formspree.io/f/REPLACE_FORM_ID" method="POST">
+<form id="quote-form" class="form" action="/api/quote" method="POST">
 <div class="field">
 <label for="q-name">Your name</label>
 <input id="q-name" name="name" type="text" autocomplete="name" required>

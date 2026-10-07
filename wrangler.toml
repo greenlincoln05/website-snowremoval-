@@ -1,0 +1,4 @@
+name = "north-country-snow"
+compatibility_date = "2025-01-01"
+# Only public/ is served. Functions live in ./functions and become /api/* routes.
+pages_build_output_dir = "public"
